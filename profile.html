@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Profile</title></head>
+<body style="font-family:sans-serif; text-align: center; padding: 40px;">
+    <h2>My Profile</h2>
+    <div style="background:white; padding:20px; border-radius:10px; border:1px solid #ddd;">
+        <p><strong>Email:</strong> <span id="my-e">Loading...</span></p>
+        <p><strong>Status:</strong> Active Investor</p>
+    </div>
+    <br><a href="dashboard.html">Back</a>
+
+    <script>
+        /* PASTE CONFIG */
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) document.getElementById('my-e').innerText = user.email;
+        });
+    </script>
+</body>
+</html>

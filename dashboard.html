@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f7f6; }
+        .box { background: #1b5e20; color: white; padding: 40px; border-radius: 20px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { background: white; padding: 20px; border-radius: 10px; text-decoration: none; color: #333; font-weight: bold; border: 1px solid #ddd; }
+        .logout { margin-top: 30px; color: red; cursor: pointer; display: block; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <p>Wallet Balance</p>
+        <h1>GHS <span id="bal">0.00</span></h1>
+    </div>
+    <div class="grid">
+        <a href="plans.html" class="btn">➕ Deposit</a>
+        <a href="withdraw.html" class="btn">💸 Withdraw</a>
+        <a href="profile.html" class="btn">👤 Profile</a>
+        <a href="history.html" class="btn">📜 History</a>
+    </div>
+    <span class="logout" onclick="firebase.auth().signOut().then(()=>window.location.href='index.html')">Log Out</span>
+
+    <script>
+        /* PASTE CONFIG */
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                firebase.firestore().collection("users").doc(user.uid).onSnapshot(doc => {
+                    document.getElementById('bal').innerText = doc.data().balance.toFixed(2);
+                });
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>

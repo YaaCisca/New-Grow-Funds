@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowFunds | Withdraw</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; text-align: center; }
+        .withdraw-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .fee-note { font-size: 13px; color: #d32f2f; margin-bottom: 15px; text-align: left; background: #ffebee; padding: 10px; border-radius: 5px; }
+        .submit-btn { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="withdraw-card">
+        <h2>Withdraw Funds</h2>
+        
+        <div class="fee-note">
+            ℹ️ A **2% service fee** applies.
+        </div>
+
+        <label style="display:block; text-align:left; font-size: 14px;">Amount to Withdraw (GHS)</label>
+        <input type="number" id="amt" placeholder="Min 50" oninput="calculateNet()">
+
+        <div id="calc-box" style="text-align: left; margin-bottom: 15px; font-size: 14px; display: none; color: #555;">
+            <p>Service Fee (2%): GHS <span id="fee-amt">0.00</span></p>
+            <p><strong>Net Payout: GHS <span id="net-amt">0.00</span></strong></p>
+        </div>
+
+        <label style="display:block; text-align:left; font-size: 14px;">Select Network</label>
+        <select id="network" onchange="updatePlaceholder()">
+            <option value="MTN">MTN Mobile Money (024, 054...)</option>
+            <option value="Telecel">Telecel Cash (020, 050...)</option>
+            <option value="AT">AT Money (026, 056...)</option>
+        </select>
+
+        <label style="display:block; text-align:left; font-size: 14px;">Momo Number</label>
+        <input type="text" id="momo" placeholder="024XXXXXXX">
+
+        <button class="submit-btn" onclick="requestWithdrawal()">Confirm Withdrawal</button>
+    </div>
+
+    <script>
+        // Update placeholder based on network selection
+        function updatePlaceholder() {
+            const network = document.getElementById('network').value;
+            const momoInput = document.getElementById('momo');
+            
+            if (network === "MTN") {
+                momoInput.placeholder = "024XXXXXXX or 054XXXXXXX";
+            } else if (network === "Telecel") {
+                momoInput.placeholder = "020XXXXXXX or 050XXXXXXX";
+            } else if (network === "AT") {
+                momoInput.placeholder = "026XXXXXXX or 056XXXXXXX";
+            }
+        }
+
+        function calculateNet() {
+            const amount = parseFloat(document.getElementById('amt').value);
+            const box = document.getElementById('calc-box');
+            if (amount >= 50) {
+                box.style.display = "block";
+                const fee = amount * 0.02;
+                const net = amount - fee;
+                document.getElementById('fee-amt').innerText = fee.toFixed(2);
+                document.getElementById('net-amt').innerText = net.toFixed(2);
+            } else {
+                box.style.display = "none";
+            }
+        }
+
+        async function requestWithdrawal() {
+            const user = firebase.auth().currentUser;
+            const amount = parseFloat(document.getElementById('amt').value);
+            const network = document.getElementById('network').value;
+            const number = document.getElementById('momo').value;
+
+            if (amount < 50) return alert("Minimum withdrawal is GHS 50");
+            if (number.length < 10) return alert("Invalid number. Please check the digits.");
+
+            try {
+                // YOUR FIREBASE LOGIC HERE
+                const fee = amount * 0.02;
+                await firebase.firestore().collection("withdrawals").add({
+                    email: user.email,
+                    requested: amount,
+                    fee: fee,
+                    payout: amount - fee,
+                    network: network,
+                    momo: number,
+                    status: "Pending",
+                    date: new Date().toISOString()
+                });
+                alert("Request submitted successfully!");
+                window.location.href = "dashboard.html";
+            } catch (e) { alert(e.message); }
+        }
+    </script>
+</body>
+</html>
