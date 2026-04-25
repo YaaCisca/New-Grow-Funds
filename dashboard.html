@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f7f6; }
         .box { background: #1b5e20; color: white; padding: 40px; border-radius: 20px; margin-bottom: 20px; }
@@ -25,13 +29,34 @@
     <span class="logout" onclick="firebase.auth().signOut().then(()=>window.location.href='index.html')">Log Out</span>
 
     <script>
-        /* PASTE CONFIG */
+        // 2. PASTE YOUR CONFIG HERE
+        const firebaseConfig = {
+          apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc",
+          authDomain: "grow-funds-ee038.firebaseapp.com",
+          databaseURL: "https://grow-funds-ee038-default-rtdb.firebaseio.com",
+          projectId: "grow-funds-ee038",
+          storageBucket: "grow-funds-ee038.firebasestorage.app",
+          messagingSenderId: "823406942973",
+          appId: "1:823406942973:web:362e219ad44856efa17c94",
+          measurementId: "G-GLTF1DPZKM"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
+                // This connects to your database to show the live balance
                 firebase.firestore().collection("users").doc(user.uid).onSnapshot(doc => {
-                    document.getElementById('bal').innerText = doc.data().balance.toFixed(2);
+                    if (doc.exists) {
+                        document.getElementById('bal').innerText = doc.data().balance.toFixed(2);
+                    }
                 });
-            } else { window.location.href = "index.html"; }
+            } else { 
+                window.location.href = "index.html"; 
+            }
         });
     </script>
 </body>
