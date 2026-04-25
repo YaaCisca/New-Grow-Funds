@@ -32,6 +32,16 @@
   if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
   }
+  // This detects the logged-in user and updates the screen
+  firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+          // Find the 'my-e' span and put the email in it
+          document.getElementById('my-e').innerText = user.email;
+      } else {
+          // If no one is logged in, send them back to the login page
+          window.location.href = "index.html";
+      }
+  });
 
   // This part detects who is logged in and shows the email
   firebase.auth().onAuthStateChanged(user => {
