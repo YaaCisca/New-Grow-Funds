@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - GrowFunds</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f8f9fa; }
+        .deposit-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); max-width: 380px; margin: 50px auto; }
+        h2 { color: #011b33; margin-bottom: 5px; }
+        .min-text { color: #ff4d4d; font-size: 13px; font-weight: bold; margin-bottom: 20px; display: block; }
+        .input-group { position: relative; margin-bottom: 25px; }
+        .input-group span { position: absolute; left: 15px; top: 12px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 15px 15px 15px 55px; border: 2px solid #eee; border-radius: 12px; font-size: 20px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #00c3f8; }
+        button { width: 100%; background-color: #011b33; color: white; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #00c3f8; }
+        .momo-icons { margin-top: 15px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="deposit-container">
+        <h2>Deposit Funds</h2>
+        <span class="min-text">Minimum Deposit: 50 GH₵</span>
+        
+        <div class="input-group">
+            <span>GH₵</span>
+            <input type="number" id="amount" placeholder="50.00" min="50">
+        </div>
+        
+        <button onclick="payWithPaystack()">Choose Network & Pay</button>
+        
+        <div class="momo-icons">
+            MTN | Telecel | AirtelTigo
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script> 
+    <script>
+      function payWithPaystack() {
+        const amountGHS = document.getElementById('amount').value;
+        
+        // 1. Strict 50 Cedis Check
+        if (!amountGHS || amountGHS < 50) {
+            alert("The minimum deposit amount is 50 GH₵.");
+            return;
+        }
+
+        let handler = PaystackPop.setup({
+          key: 'Pk_live_79015a309ab4053f32bbab37da48cf170bad29cd',
+          email: 'student@example.com', // Replace with dynamic user email
+          amount: amountGHS * 100, // Pesewas conversion
+          currency: 'GHS',
+          
+          // 2. Force Mobile Money as the primary choice
+          channels: ['mobile_money', 'card'], 
+          
+          ref: 'GF-' + Math.floor((Math.random() * 1000000000) + 1),
+          callback: function(response) {
+            alert('Deposit Successful! Ref: ' + response.reference);
+            window.location.href = "dashboard.html?status=success";
+          },
+          onClose: function() {
+            alert('Payment window closed.');
+          }
+        });
+        
+        handler.openIframe();
+      }
+    </script>
+</body>
+</html>
