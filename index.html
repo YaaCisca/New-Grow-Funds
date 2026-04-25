@@ -4,16 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrowFunds | Login & Register</title>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        h2 { color: #1b5e20; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background-color: #388e3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .toggle-link { color: #388e3c; cursor: pointer; margin-top: 20px; display: block; font-size: 14px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        h2 { color: #1b5e20; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { background: #2e7d32; color: white; padding: 12px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #1b5e20; }
+        .toggle-link { margin-top: 20px; color: #2e7d32; cursor: pointer; display: block; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -22,12 +25,15 @@
     <h2 id="title">Welcome to GrowFunds</h2>
     <input type="email" id="email" placeholder="Email Address">
     <input type="password" id="password" placeholder="Password">
+    
     <button id="auth-btn" onclick="handleAuth()">Login</button>
-    <p class="toggle-link" id="toggle-msg" onclick="toggleMode()">New here? Register</p>
+    
+    <span class="toggle-link" id="toggle-msg" onclick="toggleMode()">New here? Register</span>
 </div>
 
 <script>
-      const firebaseConfig = {
+  // 2. Your REAL Firebase Configuration
+  const firebaseConfig = {
     apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc",
     authDomain: "grow-funds-ee038.firebaseapp.com",
     databaseURL: "https://grow-funds-ee038-default-rtdb.firebaseio.com",
@@ -38,40 +44,52 @@
     measurementId: "G-GLTF1DPZKM"
   };
 
-    };
+  // Initialize Firebase
+  if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+  }
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+  let isLoginMode = true;
 
-    let isLoginMode = true;
+  function toggleMode() {
+      isLoginMode = !isLoginMode;
+      document.getElementById('title').innerText = isLoginMode ? "Welcome to GrowFunds" : "Create Account";
+      document.getElementById('auth-btn').innerText = isLoginMode ? "Login" : "Register";
+      document.getElementById('toggle-msg').innerText = isLoginMode ? "New here? Register" : "Have an account? Login";
+  }
 
-    function toggleMode() {
-        isLoginMode = !isLoginMode;
-        document.getElementById('title').innerText = isLoginMode ? 'Welcome back' : 'Create Account';
-        document.getElementById('auth-btn').innerText = isLoginMode ? 'Login' : 'Register';
-        document.getElementById('toggle-msg').innerText = isLoginMode ? 'New here? Register' : 'Already have an account? Login';
-    }
+  async function handleAuth() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-    async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            if (isLoginMode) {
-                await auth.signInWithEmailAndPassword(email, password);
-                window.location.href = "plans.html";
-            } else {
-                const cred = await auth.createUserWithEmailAndPassword(email, password);
-                await db.collection("users").doc(cred.user.uid).set({
-                    email: email,
-                    balance: 10.00, 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert("Success! GHS 10.00 bonus added.");
-                window.location.href = "plans.html";
-            }
-        } catch (err) { alert(err.message); }
-    }
+      if (!email || !password) return alert("Please fill in all fields");
+
+      try {
+          if (isLoginMode) {
+              // Login Logic
+              await auth.signInWithEmailAndPassword(email, password);
+              window.location.href = "dashboard.html";
+          } else {
+              // Registration Logic
+              const cred = await auth.createUserWithEmailAndPassword(email, password);
+              
+              // Create user profile in Firestore with 10 GHS bonus
+              await db.collection("users").doc(cred.user.uid).set({
+                  email: email,
+                  balance: 10.00,
+                  joinedDate: new Date().toISOString()
+              });
+
+              alert("Registration Successful! GHS 10.00 bonus added.");
+              window.location.href = "dashboard.html";
+          }
+      } catch (error) {
+          alert(error.message);
+      }
+  }
 </script>
+
 </body>
 </html>
