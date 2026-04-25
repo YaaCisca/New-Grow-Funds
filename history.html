@@ -4,32 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction History - GrowFunds</title>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .back-btn { text-decoration: none; font-size: 20px; color: #1b5e20; margin-right: 15px; }
-        h2 { color: #333; margin: 0; }
+        .header { display: flex; align-items: center; margin-bottom: 20px; padding: 10px 0; }
+        .back-btn { text-decoration: none; font-size: 24px; color: #1b5e20; margin-right: 15px; }
+        h2 { color: #333; margin: 0; flex-grow: 1; text-align: center; margin-right: 40px; }
         
+        #historyList { max-width: 450px; margin: auto; }
+
         .transaction-card {
             background: white;
             padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            border-radius: 15px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #ccc;
         }
+        
+        .transaction-card.credit { border-left-color: #1b5e20; }
+        .transaction-card.debit { border-left-color: #d32f2f; }
+
         .details span { display: block; }
-        .type { font-weight: bold; color: #333; }
-        .date { font-size: 12px; color: #888; }
-        .amount { font-weight: bold; font-size: 16px; }
-        .credit { color: #1b5e20; } /* Green for money in */
-        .debit { color: #d32f2f; }  /* Red for money out */
+        .type { font-weight: bold; color: #333; font-size: 16px; }
+        .date { font-size: 12px; color: #888; margin-top: 4px; }
+        
+        .amount { font-weight: bold; font-size: 17px; }
+        .amt-credit { color: #1b5e20; }
+        .amt-debit { color: #d32f2f; }
+
+        .empty-state { color: #888; margin-top: 50px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -40,10 +51,11 @@
     </div>
 
     <div id="historyList">
-        <p style="color: #888;">Loading your transactions...</p>
+        <p class="empty-state">Loading your transactions...</p>
     </div>
 
     <script>
+        // Your Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc",
             authDomain: "grow-funds-ee038.firebaseapp.com",
@@ -53,41 +65,58 @@
             appId: "1:823406942973:web:362e219ad44856efa17c94"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        firebase.auth().onAuthStateChanged(user => {
+        // Check Auth and Load Data
+        auth.onAuthStateChanged(user => {
             if (user) {
+                // Listen to transactions for this specific user
                 db.collection("transactions")
                   .where("userId", "==", user.uid)
                   .orderBy("timestamp", "desc")
                   .onSnapshot(snapshot => {
                       const list = document.getElementById('historyList');
-                      list.innerHTML = ""; // Clear loader
+                      list.innerHTML = ""; // Remove loading text
 
                       if (snapshot.empty) {
-                          list.innerHTML = "<p>No transactions yet.</p>";
+                          list.innerHTML = '<p class="empty-state">No transactions yet. Start by depositing or investing!</p>';
                           return;
                       }
 
                       snapshot.forEach(doc => {
                           const data = doc.data();
-                          const isCredit = data.type === 'Deposit' || data.type === 'Bonus';
-                          
+                          // Determine if money came in or went out
+                          const isCredit = data.type === 'Deposit' || data.type === 'Bonus' || data.type === 'Earning';
+                          const cardClass = isCredit ? 'credit' : 'debit';
+                          const amtClass = isCredit ? 'amt-credit' : 'amt-debit';
+                          const sign = isCredit ? '+' : '-';
+
+                          // Convert Firebase timestamp to readable date
+                          const dateString = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'Processing...';
+
                           list.innerHTML += `
-                              <div class="transaction-card">
+                              <div class="transaction-card ${cardClass}">
                                   <div class="details">
                                       <span class="type">${data.type}</span>
-                                      <span class="date">${data.date || 'Today'}</span>
+                                      <span class="date">${dateString}</span>
                                   </div>
-                                  <div class="amount ${isCredit ? 'credit' : 'debit'}">
-                                      ${isCredit ? '+' : '-'} GH₵ ${data.amount.toFixed(2)}
+                                  <div class="amount ${amtClass}">
+                                      ${sign} GH₵ ${parseFloat(data.amount).toFixed(2)}
                                   </div>
                               </div>
                           `;
                       });
+                  }, error => {
+                      console.log("Error fetching history: ", error);
+                      document.getElementById('historyList').innerHTML = '<p class="empty-state">Unable to load history. Please check your connection.</p>';
                   });
             } else {
+                // Not logged in? Send to login
                 window.location.href = "index.html";
             }
         });
