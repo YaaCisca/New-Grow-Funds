@@ -3,64 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grow Funds - My Profile</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Grow Funds - Profile</title>
     <style>
-        .profile-info-section {
-            background: white;
-            margin: 15px;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 5px;
-            border-bottom: 1px solid #eee;
-        }
+        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; }
+        .header { background: #004d00; padding: 25px; text-align: center; }
+        .info-card { background: #1a1a1a; margin: 15px; border-radius: 12px; padding: 15px; border: 1px solid #333; }
+        .info-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #333; }
         .info-row:last-child { border-bottom: none; }
-        .label { color: #666; font-weight: 500; }
-        .value { color: #333; font-weight: bold; }
-        .status-active { color: #28a745; }
+        .label { color: #888; font-size: 0.9em; }
+        .value { color: #fff; font-weight: bold; }
+        .status { color: #28a745; }
+        .logout-btn { 
+            width: 90%; margin: 20px 5%; padding: 15px; 
+            background: #b30000; color: white; border: none; 
+            border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header" style="background: #28a745; color: white; padding: 20px; text-align: center;">
-        <h2>User Profile</h2>
+    <div class="header">
+        <h2 style="margin: 0;">User Profile</h2>
     </div>
 
-    <div class="profile-info-section">
+    <div class="info-card">
         <div class="info-row">
             <span class="label">Name:</span>
-            <span class="value" id="disp-name">Loading...</span>
+            <span class="value" id="dispName">No Name</span>
         </div>
         <div class="info-row">
             <span class="label">Phone Number:</span>
-            <span class="value" id="disp-phone">Loading...</span>
+            <span class="value" id="dispPhone">No Number</span>
         </div>
         <div class="info-row">
             <span class="label">Email:</span>
-            <span class="value" id="disp-email">Loading...</span>
+            <span class="value" id="dispEmail">No Email</span>
         </div>
         <div class="info-row">
             <span class="label">Current Status:</span>
-            <span class="value status-active" id="disp-status">Active</span>
+            <span class="value status" id="dispStatus">Active</span>
         </div>
     </div>
 
-    <div class="profile-info-section">
+    <div class="info-card">
         <div class="info-row">
             <span class="label">Total Balance:</span>
-            <span class="value" id="disp-balance">0.00 GH₵</span>
+            <span class="value" id="dispBalance">0.00 GH₵</span>
         </div>
     </div>
 
-    <button class="logout-btn" style="width: 90%; margin: 20px 5%; padding: 12px; background: #ff4444; color: white; border: none; border-radius: 5px;" onclick="logout()">
-        Logout
-    </button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
 
-    <script src="profile.js"></script>
+    <script>
+        // Run as soon as the page opens
+        window.onload = function() {
+            // Pulling data from localStorage
+            document.getElementById('dispName').innerText = localStorage.getItem('userName') || "Guest";
+            document.getElementById('dispPhone').innerText = localStorage.getItem('userPhone') || "N/A";
+            document.getElementById('dispEmail').innerText = localStorage.getItem('userEmail') || "N/A";
+            document.getElementById('dispBalance').innerText = (localStorage.getItem('userBalance') || "0.00") + " GH₵";
+            document.getElementById('dispStatus').innerText = localStorage.getItem('userStatus') || "Inactive";
+        };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'register.html'; // Go back to register/login
+        }
+    </script>
 </body>
 </html>
