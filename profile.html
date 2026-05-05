@@ -1,74 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grow Funds - Profile</title>
-    <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; }
-        .header { background: #004d00; padding: 25px; text-align: center; }
-        .info-card { background: #1a1a1a; margin: 15px; border-radius: 12px; padding: 15px; border: 1px solid #333; }
-        .info-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #333; }
-        .info-row:last-child { border-bottom: none; }
-        .label { color: #888; font-size: 0.9em; }
-        .value { color: #fff; font-weight: bold; }
-        .status { color: #28a745; }
-        .logout-btn { 
-            width: 90%; margin: 20px 5%; padding: 15px; 
-            background: #b30000; color: white; border: none; 
-            border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-    </style>
+    <title>Profile - Grow Funds</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 <body>
-
-    <div class="header">
-        <h2 style="margin: 0;">User Profile</h2>
+    <div class="header"><h2>My Profile</h2></div>
+    <div class="card">
+        <p>Name: <span id="pName">...</span></p>
+        <p>Email: <span id="pEmail">...</span></p>
+        <button onclick="firebase.auth().signOut().then(()=>window.location.href='registration.html')" style="color:red; background:none; border:1px solid red; padding:10px; width:100%; border-radius:5px;">Logout</button>
     </div>
-
-    <div class="info-card">
-        <div class="info-row">
-            <span class="label">Name:</span>
-            <span class="value" id="dispName">No Name</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Phone Number:</span>
-            <span class="value" id="dispPhone">No Number</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Email:</span>
-            <span class="value" id="dispEmail">No Email</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Current Status:</span>
-            <span class="value status" id="dispStatus">Active</span>
-        </div>
-    </div>
-
-    <div class="info-card">
-        <div class="info-row">
-            <span class="label">Total Balance:</span>
-            <span class="value" id="dispBalance">0.00 GH₵</span>
-        </div>
-    </div>
-
-    <button class="logout-btn" onclick="logout()">Logout</button>
-
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="task.html" class="nav-link">Task</a>
+        <a href="team.html" class="nav-link">Team</a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+    </nav>
     <script>
-        // Run as soon as the page opens
-        window.onload = function() {
-            // Pulling data from localStorage
-            document.getElementById('dispName').innerText = localStorage.getItem('userName') || "Guest";
-            document.getElementById('dispPhone').innerText = localStorage.getItem('userPhone') || "N/A";
-            document.getElementById('dispEmail').innerText = localStorage.getItem('userEmail') || "N/A";
-            document.getElementById('dispBalance').innerText = (localStorage.getItem('userBalance') || "0.00") + " GH₵";
-            document.getElementById('dispStatus').innerText = localStorage.getItem('userStatus') || "Inactive";
-        };
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'register.html'; // Go back to register/login
-        }
+        const firebaseConfig = { apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc", authDomain: "grow-funds-ee038.firebaseapp.com", projectId: "grow-funds-ee038", storageBucket: "grow-funds-ee038.appspot.com", messagingSenderId: "567087541628", appId: "1:567087541628:web:78a3f8c8d8f8a8f8" };
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged(user => {
+            if(user) {
+                firebase.firestore().collection("users").doc(user.uid).get().then(doc => {
+                    document.getElementById('pName').innerText = doc.data().name;
+                    document.getElementById('pEmail').innerText = doc.data().email;
+                });
+            }
+        });
     </script>
 </body>
 </html>
