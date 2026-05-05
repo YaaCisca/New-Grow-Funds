@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Funds - Register</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .form-container { width: 90%; max-width: 400px; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #004d00; }
+        h2 { text-align: center; color: #28a745; }
+        input { width: 100%; padding: 12px; margin: 10px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #333; background: #222; color: white; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Create Account</h2>
+    <input type="text" id="regName" placeholder="Full Name" required>
+    <input type="tel" id="regPhone" placeholder="Phone Number" required>
+    <input type="email" id="regEmail" placeholder="Email Address" required>
+    <input type="password" id="regPass" placeholder="Password" required>
+    <button onclick="handleRegister()">Register</button>
+</div>
+
+<script>
+    function handleRegister() {
+        const name = document.getElementById('regName').value;
+        const phone = document.getElementById('regPhone').value;
+        const email = document.getElementById('regEmail').value;
+
+        if(name && phone && email) {
+            // Saving data to browser storage
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userPhone', phone);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userBalance', "10.00"); // The Welcome Bonus
+            localStorage.setItem('userStatus', "Active");
+
+            alert("Registration Successful! Bonus of 10 GH₵ added.");
+            window.location.href = 'index.html'; // Redirect to Home
+        } else {
+            alert("Please fill all fields");
+        }
+    }
+</script>
+</body>
+</html>
