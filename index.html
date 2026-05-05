@@ -3,122 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grow Funds - Dashboard</title>
+    <title>Grow Funds - Home</title>
     <style>
-        :root { --primary-green: #28a745; --dark-bg: #000; --card-bg: #1a1a1a; --text-gray: #888; }
-        body { background-color: var(--dark-bg); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 80px; }
-        
-        /* Header & Balance Section */
-        .header { background: var(--primary-green); padding: 20px; text-align: center; border-radius: 0 0 20px 20px; }
-        .balance-card { background: var(--card-bg); margin: -30px 15px 15px 15px; padding: 20px; border-radius: 15px; display: flex; justify-content: space-around; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .stat-item { text-align: center; }
-        .stat-item span { font-size: 12px; color: var(--text-gray); }
-        .stat-item h3 { margin: 5px 0; color: #fff; }
-
-        /* Investment Tiers */
-        .tier-container { padding: 15px; }
-        .tier-card { background: var(--card-bg); border-radius: 12px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
-        .tier-header { background: #222; padding: 10px 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 80px; }
+        .header { background: #004d00; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px; }
+        .balance-card { background: #1a1a1a; margin: -20px 15px 15px 15px; padding: 20px; border-radius: 15px; display: flex; justify-content: space-around; border: 1px solid #333; }
+        .tier-card { background: #1a1a1a; margin: 15px; border-radius: 12px; border: 1px solid #333; overflow: hidden; }
         .tier-body { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .tier-info h4 { margin: 0; color: var(--primary-green); }
-        .tier-info p { margin: 5px 0; font-size: 13px; color: var(--text-gray); }
-        .invest-btn { background: var(--primary-green); color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        /* Bottom Nav */
+        .invest-btn { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; }
+        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .nav-item { color: var(--text-gray); text-decoration: none; font-size: 14px; display: flex; flex-direction: column; align-items: center; }
-        .nav-item.active { color: var(--primary-green); }
+        .nav-link { color: #888; text-decoration: none; font-size: 14px; }
+        .active { color: #28a745; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2 id="welcome-msg">Welcome, User</h2>
-        <p>Grow your funds with us today</p>
+        <h2 id="welcomeName">Welcome, Investor</h2>
+        <p>Current Balance: <span id="topBalance">10.00</span> GH₵</p>
     </div>
 
     <div class="balance-card">
-        <div class="stat-item">
-            <span>Total Balance</span>
-            <h3 id="main-balance">0.00 GH₵</h3>
+        <div style="text-align:center">
+            <span style="color:#888; font-size:12px">Total Balance</span>
+            <h3 id="cardBalance">10.00 GH₵</h3>
         </div>
-        <div class="stat-item">
-            <span>Daily Profit</span>
+        <div style="text-align:center">
+            <span style="color:#888; font-size:12px">Daily Profit</span>
             <h3>0.00 GH₵</h3>
         </div>
     </div>
 
-    <div class="tier-container">
-        <h3>Investment Plans</h3>
-
-        <div class="tier-card">
-            <div class="tier-header">
-                <span>Starter Plan</span>
-                <span style="color: var(--primary-green);">VIP 1</span>
+    <div class="tier-card">
+        <div class="tier-body">
+            <div>
+                <h4 style="margin:0; color:#28a745">VIP 1 (Starter)</h4>
+                <p style="font-size:12px; color:#888">Price: 50 GH₵ | Daily: 2.50 GH₵</p>
             </div>
-            <div class="tier-body">
-                <div class="tier-info">
-                    <h4>Price: 50.00 GH₵</h4>
-                    <p>Daily Income: 2.50 GH₵</p>
-                    <p>Total Revenue: 75.00 GH₵</p>
-                </div>
-                <button class="invest-btn" onclick="invest(50)">Invest</button>
-            </div>
-        </div>
-
-        <div class="tier-card">
-            <div class="tier-header">
-                <span>Growth Plan</span>
-                <span style="color: var(--primary-green);">VIP 2</span>
-            </div>
-            <div class="tier-body">
-                <div class="tier-info">
-                    <h4>Price: 100.00 GH₵</h4>
-                    <p>Daily Income: 6.00 GH₵</p>
-                    <p>Total Revenue: 180.00 GH₵</p>
-                </div>
-                <button class="invest-btn" onclick="invest(100)">Invest</button>
-            </div>
+            <button class="invest-btn" onclick="alert('Insufficient Balance!')">Invest</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
-            <span>Home</span>
-        </a>
-        <a href="task.html" class="nav-item">
-            <span>Task</span>
-        </a>
-        <a href="team.html" class="nav-item">
-            <span>Team</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <span>Profile</span>
-        </a>
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="task.html" class="nav-link">Task</a>
+        <a href="team.html" class="nav-link">Team</a>
+        <a href="profile.html" class="nav-link">Profile</a>
     </nav>
 
     <script>
         window.onload = function() {
-            // Get user data from localStorage
             const name = localStorage.getItem('userName') || "Investor";
             const balance = localStorage.getItem('userBalance') || "10.00";
-
-            // Update UI
-            document.getElementById('welcome-msg').innerText = "Welcome, " + name;
-            document.getElementById('main-balance').innerText = balance + " GH₵";
-        };
-
-        function invest(amount) {
-            let currentBalance = parseFloat(localStorage.getItem('userBalance') || "10");
-            
-            if (currentBalance < amount) {
-                alert("Insufficient Balance! Please recharge your account.");
-            } else {
-                let newBalance = currentBalance - amount;
-                localStorage.setItem('userBalance', newBalance.toFixed(2));
-                document.getElementById('main-balance').innerText = newBalance.toFixed(2) + " GH₵";
-                alert("Investment of " + amount + " GH₵ successful!");
-            }
+            document.getElementById('welcomeName').innerText = "Welcome, " + name;
+            document.getElementById('topBalance').innerText = balance;
+            document.getElementById('cardBalance').innerText = balance + " GH₵";
         }
     </script>
 </body>
