@@ -1,40 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><title>Profile</title></head>
-<body style="font-family:sans-serif; text-align: center; padding: 40px;">
-    <h2>My Profile</h2>
-    <div style="background:white; padding:20px; border-radius:10px; border:1px solid #ddd;">
-        <p><strong>Email:</strong> <span id="my-e">Loading...</span></p>
-        <p><strong>Status:</strong> Active Investor</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Funds - My Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-info-section {
+            background: white;
+            margin: 15px;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #666; font-weight: 500; }
+        .value { color: #333; font-weight: bold; }
+        .status-active { color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="header" style="background: #28a745; color: white; padding: 20px; text-align: center;">
+        <h2>User Profile</h2>
     </div>
-    <br><a href="dashboard.html">Back</a>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <div class="profile-info-section">
+        <div class="info-row">
+            <span class="label">Name:</span>
+            <span class="value" id="disp-name">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Phone Number:</span>
+            <span class="value" id="disp-phone">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value" id="disp-email">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Current Status:</span>
+            <span class="value status-active" id="disp-status">Active</span>
+        </div>
+    </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc",
-    authDomain: "grow-funds-ee038.firebaseapp.com",
-    databaseURL: "https://grow-funds-ee038-default-rtdb.firebaseio.com",
-    projectId: "grow-funds-ee038",
-    storageBucket: "grow-funds-ee038.firebasestorage.app",
-    messagingSenderId: "823406942973",
-    appId: "1:823406942973:web:362e219ad44856efa17c94",
-    measurementId: "G-GLTF1DPZKM"
-  };
+    <div class="profile-info-section">
+        <div class="info-row">
+            <span class="label">Total Balance:</span>
+            <span class="value" id="disp-balance">0.00 GH₵</span>
+        </div>
+    </div>
 
-  if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-  }
+    <button class="logout-btn" style="width: 90%; margin: 20px 5%; padding: 12px; background: #ff4444; color: white; border: none; border-radius: 5px;" onclick="logout()">
+        Logout
+    </button>
 
-  firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-          document.getElementById('my-e').innerText = user.email;
-      } else {
-          window.location.href = "index.html";
-      }
-  });
-</script>
+    <script src="profile.js"></script>
 </body>
 </html>
