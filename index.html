@@ -3,96 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrowFunds | Login & Register</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
+    <title>Grow Funds - Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
-        h2 { color: #1b5e20; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { background: #2e7d32; color: white; padding: 12px; width: 100%; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .toggle-link { margin-top: 20px; color: #2e7d32; cursor: pointer; display: block; font-size: 14px; text-decoration: none; }
+        :root { --primary-green: #28a745; --dark-bg: #000; --card-bg: #1a1a1a; --text-gray: #888; }
+        body { background-color: var(--dark-bg); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 80px; }
+        
+        /* Header & Balance Section */
+        .header { background: var(--primary-green); padding: 20px; text-align: center; border-radius: 0 0 20px 20px; }
+        .balance-card { background: var(--card-bg); margin: -30px 15px 15px 15px; padding: 20px; border-radius: 15px; display: flex; justify-content: space-around; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .stat-item { text-align: center; }
+        .stat-item span { font-size: 12px; color: var(--text-gray); }
+        .stat-item h3 { margin: 5px 0; color: #fff; }
+
+        /* Investment Tiers */
+        .tier-container { padding: 15px; }
+        .tier-card { background: var(--card-bg); border-radius: 12px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
+        .tier-header { background: #222; padding: 10px 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
+        .tier-body { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .tier-info h4 { margin: 0; color: var(--primary-green); }
+        .tier-info p { margin: 5px 0; font-size: 13px; color: var(--text-gray); }
+        .invest-btn { background: var(--primary-green); color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
+        .nav-item { color: var(--text-gray); text-decoration: none; font-size: 14px; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: var(--primary-green); }
     </style>
 </head>
 <body>
 
-<div class="auth-card">
-    <h2 id="title">Welcome to GrowFunds</h2>
-    <input type="email" id="email" placeholder="Email Address">
-    <input type="password" id="password" placeholder="Password">
-    
-    <button id="auth-btn" onclick="handleAuth()">Login</button>
-    
-    <span class="toggle-link" id="toggle-msg" onclick="toggleMode()">New here? Register</span>
-</div>
+    <div class="header">
+        <h2 id="welcome-msg">Welcome, User</h2>
+        <p>Grow your funds with us today</p>
+    </div>
 
-<script>
-  // 1. Configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyATHzKZbEV-G8geYqawjooNvBXO7w39bFc",
-    authDomain: "grow-funds-ee038.firebaseapp.com",
-    databaseURL: "https://grow-funds-ee038-default-rtdb.firebaseio.com",
-    projectId: "grow-funds-ee038",
-    storageBucket: "grow-funds-ee038.firebasestorage.app",
-    messagingSenderId: "823406942973",
-    appId: "1:823406942973:web:362e219ad44856efa17c94",
-    measurementId: "G-GLTF1DPZKM"
-  };
+    <div class="balance-card">
+        <div class="stat-item">
+            <span>Total Balance</span>
+            <h3 id="main-balance">0.00 GH₵</h3>
+        </div>
+        <div class="stat-item">
+            <span>Daily Profit</span>
+            <h3>0.00 GH₵</h3>
+        </div>
+    </div>
 
-  // 2. Immediate Initialization
-  if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-  }
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    <div class="tier-container">
+        <h3>Investment Plans</h3>
 
-  let isLoginMode = true;
+        <div class="tier-card">
+            <div class="tier-header">
+                <span>Starter Plan</span>
+                <span style="color: var(--primary-green);">VIP 1</span>
+            </div>
+            <div class="tier-body">
+                <div class="tier-info">
+                    <h4>Price: 50.00 GH₵</h4>
+                    <p>Daily Income: 2.50 GH₵</p>
+                    <p>Total Revenue: 75.00 GH₵</p>
+                </div>
+                <button class="invest-btn" onclick="invest(50)">Invest</button>
+            </div>
+        </div>
 
-  function toggleMode() {
-      isLoginMode = !isLoginMode;
-      document.getElementById('title').innerText = isLoginMode ? "Welcome to GrowFunds" : "Create Account";
-      document.getElementById('auth-btn').innerText = isLoginMode ? "Login" : "Register";
-      document.getElementById('toggle-msg').innerText = isLoginMode ? "New here? Register" : "Have an account? Login";
-  }
+        <div class="tier-card">
+            <div class="tier-header">
+                <span>Growth Plan</span>
+                <span style="color: var(--primary-green);">VIP 2</span>
+            </div>
+            <div class="tier-body">
+                <div class="tier-info">
+                    <h4>Price: 100.00 GH₵</h4>
+                    <p>Daily Income: 6.00 GH₵</p>
+                    <p>Total Revenue: 180.00 GH₵</p>
+                </div>
+                <button class="invest-btn" onclick="invest(100)">Invest</button>
+            </div>
+        </div>
+    </div>
 
-  async function handleAuth() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <span>Home</span>
+        </a>
+        <a href="task.html" class="nav-item">
+            <span>Task</span>
+        </a>
+        <a href="team.html" class="nav-item">
+            <span>Team</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <span>Profile</span>
+        </a>
+    </nav>
 
-      if (!email || !password) {
-          alert("Please fill in all fields");
-          return;
-      }
+    <script>
+        window.onload = function() {
+            // Get user data from localStorage
+            const name = localStorage.getItem('userName') || "Investor";
+            const balance = localStorage.getItem('userBalance') || "10.00";
 
-      try {
-          if (isLoginMode) {
-              // Login Logic
-              await auth.signInWithEmailAndPassword(email, password);
-              window.location.href = "dashboard.html";
-          } else {
-              // Registration Logic
-              const cred = await auth.createUserWithEmailAndPassword(email, password);
-              
-              // Create user record with 10 GHS bonus
-              await db.collection("users").doc(cred.user.uid).set({
-                  email: email,
-                  balance: 10.00,
-                  joinedDate: new Date().toISOString()
-              });
+            // Update UI
+            document.getElementById('welcome-msg').innerText = "Welcome, " + name;
+            document.getElementById('main-balance').innerText = balance + " GH₵";
+        };
 
-              alert("Registration Successful! GHS 10.00 bonus added.");
-              window.location.href = "dashboard.html";
-          }
-      } catch (error) {
-          console.error(error);
-          alert(error.message);
-      }
-  }
-</script>
-
+        function invest(amount) {
+            let currentBalance = parseFloat(localStorage.getItem('userBalance') || "10");
+            
+            if (currentBalance < amount) {
+                alert("Insufficient Balance! Please recharge your account.");
+            } else {
+                let newBalance = currentBalance - amount;
+                localStorage.setItem('userBalance', newBalance.toFixed(2));
+                document.getElementById('main-balance').innerText = newBalance.toFixed(2) + " GH₵";
+                alert("Investment of " + amount + " GH₵ successful!");
+            }
+        }
+    </script>
 </body>
 </html>
